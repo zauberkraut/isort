@@ -10,7 +10,6 @@ import (
 const (
 	maxRandBits = 16
 	maxRandLen  = 1<<maxRandBits - 1
-	maxRandElem = 99999
 )
 
 func init() {
@@ -45,12 +44,15 @@ func randMag() int {
 func benchSort(b *testing.B, sortf func([]int)) {
 	var arr [maxRandLen]int
 
+  b.StopTimer()
 	b.ResetTimer()
 	// TODO: this len randomization is somewhat stupid
 	for i := 0; i < b.N; i++ {
-		a := arr[:rand.Intn(len(arr))]
+		a := arr[:randMag()]
 		randomize(a)
+    b.StartTimer()
 		sortf(a)
+    b.StopTimer()
 	}
 }
 
@@ -98,7 +100,7 @@ func BenchmarkInts(b *testing.B) {
 func TestMQsort(t *testing.T) {
 	randUnsorted := make([]int, randMag())
 	for i := range randUnsorted {
-		randUnsorted[i] = rand.Intn(maxRandElem + 1)
+		randUnsorted[i] = rand.Int()
 	}
 
 	tests := [][]int{

@@ -23,10 +23,7 @@ func msort(a []int, b []int) {
 	copy(b, a)
 
 	for i, j, k := 0, mid, 0; k < len(a); k++ {
-		if i == mid {
-			a[k] = b[j]
-			j++
-		} else if j == len(a) || b[i] < b[j] {
+		if j == len(a) || (i < mid && b[i] < b[j]) {
 			a[k] = b[i]
 			i++
 		} else {
