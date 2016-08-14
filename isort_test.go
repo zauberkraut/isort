@@ -44,15 +44,15 @@ func randMag() int {
 func benchSort(b *testing.B, sortf func([]int)) {
 	var arr [maxRandLen]int
 
-  b.StopTimer()
+	b.StopTimer()
 	b.ResetTimer()
 	// TODO: this len randomization is somewhat stupid
 	for i := 0; i < b.N; i++ {
 		a := arr[:randMag()]
 		randomize(a)
-    b.StartTimer()
+		b.StartTimer()
 		sortf(a)
-    b.StopTimer()
+		b.StopTimer()
 	}
 }
 
