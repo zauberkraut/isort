@@ -1,6 +1,7 @@
 package isort
 
 import (
+	"math"
 	"math/rand"
 	"sort"
 	"testing"
@@ -59,7 +60,17 @@ func benchSort(b *testing.B, sortf func([]int)) {
 func BenchmarkMsort(b *testing.B) {
 	buf := make([]int, maxRandLen) // save on reallocation costs
 	wrapper := func(a []int) {
-		msort(a, buf)
+		if len(a) > 1 { // inelegant copy of Msort()'s launcher logic
+			b := buf[:len(a)]
+			depth := int(math.Floor(math.Log2(float64(len(a)))))
+			sortToB := depth&1 == 1
+			if sortToB {
+				msort(b, a, depth)
+				copy(a, b)
+			} else {
+				msort(a, b, depth)
+			}
+		}
 	}
 	benchSort(b, wrapper)
 }

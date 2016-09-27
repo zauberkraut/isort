@@ -8,35 +8,49 @@
 package isort
 
 import (
+	"math"
 	"math/rand"
 )
 
-func msort(a []int, b []int) {
-	mid := len(a) / 2
-	if mid >= 2 {
-		msort(a[:mid], b)
-	}
-	if len(a)-mid >= 2 {
-		msort(a[mid:], b)
-	}
+func msort(a []int, b []int, depth int) {
+	n := len(a)
+	mid := n / 2
 
-	copy(b, a)
-
-	for i, j, k := 0, mid, 0; k < len(a); k++ {
-		if j == len(a) || (i < mid && b[i] < b[j]) {
-			a[k] = b[i]
-			i++
-		} else {
-			a[k] = b[j]
-			j++
+	if depth > 0 {
+		if mid > 1 {
+			msort(b[:mid], a[:mid], depth-1)
 		}
+		if n-mid > 1 {
+			msort(b[mid:], a[mid:], depth-1)
+		}
+
+		for i, l, r := 0, 0, mid; i < n; i++ {
+			if r == n || (l < mid && b[l] <= b[r]) {
+				a[i] = b[l]
+				l++
+			} else {
+				a[i] = b[r]
+				r++
+			}
+		}
+	} else if a[0] > a[1] { // in-place sorting at pair leaf
+		a[0], a[1] = a[1], a[0]
 	}
 }
 
-/* Mergesort */
+/* Top-down mergesort. */
 func Msort(a []int) {
-	b := make([]int, len(a))
-	msort(a, b)
+	if len(a) > 1 {
+		b := make([]int, len(a))
+		depth := int(math.Floor(math.Log2(float64(len(a)))))
+		sortToB := depth&1 == 1
+		if sortToB {
+			msort(b, a, depth)
+			copy(a, b)
+		} else {
+			msort(a, b, depth)
+		}
+	}
 }
 
 /* Chooses a pivot and returns its (index, value). */
